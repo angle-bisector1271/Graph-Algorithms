@@ -1,0 +1,86 @@
+Do a multi-source BFS from all monster cells to record for each grid cell the earliest time a monster can arrive.
+
+Do a BFS from the player’s start cell, storing each cell’s parent and your arrival time, and only move into a neighbor if your time+1 is strictly less than the monster’s time for that cell.
+
+When you first reach any boundary cell, stop and backtrack via parents to reconstruct the shortest safe path.
+
+If no boundary is reached under these constraints, output "NO"; otherwise output "YES", the path length, and the path directions.
+
+
+
+#include <bits/stdc++.h>
+using namespace std;
+using pii = pair<int,int>;
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int n, m;
+    cin >> n >> m;
+    vector<string> g(n);
+    for (int i = 0; i < n; i++) cin >> g[i];
+    pii start;
+    const int INF = 1e9;
+    for (int i = 0; i < n; i++) for (int j = 0; j < m; j++)
+        if (g[i][j] == 'A') start = {i,j};
+    if (start.first==0||start.first==n-1||start.second==0||start.second==m-1) {
+        cout << "YES\n0\n\n";
+        return 0;
+    }
+    vector<vector<int>> dm(n, vector<int>(m, INF));
+    queue<pii> qm;
+    for (int i = 0; i < n; i++) for (int j = 0; j < m; j++)
+        if (g[i][j] == 'M') {
+            dm[i][j] = 0;
+            qm.push({i,j});
+        }
+    int dx[4] = {1,-1,0,0}, dy[4] = {0,0,1,-1};
+    while (!qm.empty()) {
+        auto [x,y] = qm.front(); qm.pop();
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx>=0&&nx<n&&ny>=0&&ny<m&&g[nx][ny]!='#'&&dm[nx][ny]>dm[x][y]+1) {
+                dm[nx][ny]=dm[x][y]+1;
+                qm.push({nx,ny});
+            }
+        }
+    }
+    vector<vector<int>> dp(n, vector<int>(m, INF));
+    vector<vector<pii>> parent(n, vector<pii>(m,{-1,-1}));
+    vector<vector<char>> moveC(n, vector<char>(m));
+    queue<pii> qp;
+    dp[start.first][start.second]=0;
+    qp.push(start);
+    bool found=false;
+    pii endp;
+    char mc[4] = {'D','U','R','L'};
+    while (!qp.empty() && !found) {
+        auto [x,y] = qp.front(); qp.pop();
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx>=0&&nx<n&&ny>=0&&ny<m&&g[nx][ny]!='#'&&dp[nx][ny]==INF) {
+                int t = dp[x][y]+1;
+                if (t<dm[nx][ny]) {
+                    dp[nx][ny]=t;
+                    parent[nx][ny]={x,y};
+                    moveC[nx][ny]=mc[d];
+                    qp.push({nx,ny});
+                    if (nx==0||nx==n-1||ny==0||ny==m-1) {
+                        found=true;
+                        endp={nx,ny};
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (!found) {
+        cout<<"NO\n";
+        return 0;
+    }
+    string path;
+    for (pii p=endp; p!=start; p=parent[p.first][p.second])
+        path.push_back(moveC[p.first][p.second]);
+    reverse(path.begin(), path.end());
+    cout<<"YES\n"<<path.size()<<"\n"<<path<<"\n";
+    return 0;
+}

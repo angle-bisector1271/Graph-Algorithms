@@ -1,0 +1,57 @@
+Do BFS form node 1. Store parent of each node during the BFS process. 
+If node n hasn't been visited, return impossible, and if it has been visited, do a back-track 
+starting from node n by iteratively going from node to its parent, till you reach node 1. 
+This gives you a shortest path between node 1 and node n.
+
+#include<bits/stdc++.h>
+using namespace std;
+
+void bfs(int start, vector<set<int>>& adj, vector<bool>& visited, vector<int>& parent) {
+    queue<int> q;
+    q.push(start);
+    visited[start] = true;
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+                parent[neighbor] = node;
+            }
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);   
+    int n, m;
+    cin >> n >> m;
+    vector<set<int>> adj(n);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--; v--;
+        adj[u].insert(v);
+        adj[v].insert(u);
+    }
+    vector<bool> visited(n, false);
+    vector<int> parent(n, -1);
+    bfs(0, adj, visited, parent);
+    if (visited[n - 1]) {
+        vector<int> path;
+        for (int v = n - 1; v != -1; v = parent[v]) {
+            path.push_back(v + 1);
+        }
+        reverse(path.begin(), path.end());
+        cout << path.size() << "\n";
+        for (int v : path) {
+            cout << v << " ";
+        }
+    } else {
+        cout << "IMPOSSIBLE\n";
+    }
+
+    return 0;
+}

@@ -1,0 +1,35 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+void dfs(int u, vector<set<int>>& adj, vector<bool>& visited) {
+    visited[u] = true;
+    for (int v : adj[u]) {
+        if (!visited[v]) {
+            dfs(v, adj, visited);
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);   
+    int n, m;
+    cin >> n >> m;
+    vector<set<int>> adj(n);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--; v--;
+        adj[u].insert(v);
+        adj[v].insert(u);
+    }
+    vector<bool> visited(n, false);
+    int components = 0;
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            dfs(i, adj, visited);
+            components++;
+        }
+    }
+    cout << components << "\n";
+}

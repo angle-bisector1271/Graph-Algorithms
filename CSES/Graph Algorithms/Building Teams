@@ -1,0 +1,57 @@
+We need to assign 2 colours to the nodes of a bipartitie graph, or tell wether it isnt bipartite.
+We iterate from node 1 to node n, and start a BFS from the node if it hasnt alread been visited.
+Each the nodes in each layer during BFS traversal have the other colour, than the nodes in the previous layer.
+
+
+
+#include<bits/stdc++.h>
+using namespace std;
+
+void bfs(int start, vector<set<int>>& adj, vector<bool>& visited, vector<int>& type) {
+    queue<int> q;
+    q.push(start);
+    visited[start] = true;
+    type[start] = 0;
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        for (int neighbor : adj[node]) {
+            if (type[neighbor] == type[node]) {
+                cout << "IMPOSSIBLE\n";
+                exit(0);
+            }
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                q.push(neighbor);
+                type[neighbor] = (type[node] + 1)%2;
+            }
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);   
+    int n, m;
+    cin >> n >> m;
+    vector<set<int>> adj(n);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--; v--;
+        adj[u].insert(v);
+        adj[v].insert(u);
+    }
+    vector<bool> visited(n, false);
+    vector<int> type(n, -1);
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            bfs(i, adj, visited, type);
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        cout << type[i] + 1 << " ";
+    }
+
+    return 0;
+}

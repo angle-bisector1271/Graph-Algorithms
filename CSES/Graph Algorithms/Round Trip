@@ -1,0 +1,59 @@
+Do a DFS and store parent of each node. when at any point during the traversal, there is an already visited node in 
+the adjacency of the current node, keep back-tracking to the parent till you reach this adjacent node. This is a cycle 
+that you have obtained.
+
+#include<bits/stdc++.h>
+using namespace std;
+ 
+void dfs(int node, vector<set<int>>& adj, vector<bool>& visited, vector<int>& parent) {
+    visited[node] = true;
+    for (int neighbor : adj[node]) {
+        if (!visited[neighbor]) {
+            parent[neighbor] = node;
+            dfs(neighbor, adj, visited, parent);
+        }
+        else if (parent[node] != neighbor) {
+            vector<int> cycle;
+            cycle.push_back(neighbor);
+            int current = node;
+            while (current != -1 && current != neighbor) {
+                cycle.push_back(current);
+                current = parent[current];
+            }
+            cycle.push_back(neighbor);
+            reverse(cycle.begin(), cycle.end());
+            cout << cycle.size() << endl;
+            for (int v : cycle) {
+                cout << v + 1 << " ";
+            }
+            cout << endl;
+            exit(0);
+        }
+    }
+}
+ 
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);   
+    int n, m;
+    cin >> n >> m;
+    vector<set<int>> adj(n);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--; v--;
+        adj[u].insert(v);
+        adj[v].insert(u);
+    }
+    vector<bool> visited(n, false);
+    vector<int> parent(n, -1);
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            dfs(i, adj, visited, parent);
+        }
+    }
+    cout << "IMPOSSIBLE" << endl;
+    
+ 
+    return 0;
+}

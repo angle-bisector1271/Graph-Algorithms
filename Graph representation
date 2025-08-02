@@ -1,0 +1,4 @@
+I represent a graph as an array of sets, where each element of the array represents the adjacency set of a particular node.
+Alternately, an edge-list can also be used. But an adjacency set, despite having slower insertion, has many advantages,
+like faster deletion, faster existance check, faster minimum-retrieval of neighbours for a node. Therefore in my standard
+graph algorithm tempelate I decide to use an adjacency set.

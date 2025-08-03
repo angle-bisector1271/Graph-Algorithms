@@ -1,0 +1,35 @@
+Repeatedly peel off leaves and record how deep a node is. Again something similar to Kahn's algorithm.
+
+
+#include <bits/stdc++.h>
+using namespace std;
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;
+    cin>>n;
+    vector<vector<int>> g(n+1);
+    vector<int> deg(n+1);
+    for(int i=1,u,v;i<n;i++){
+        cin>>u>>v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+        deg[u]++; deg[v]++;
+    }
+    queue<int> q;
+    for(int i=1;i<=n;i++) if(deg[i]==1) q.push(i);
+    int rem=n, rounds=0;
+    while(rem>2){
+        int sz=q.size();
+        rounds++;
+        for(int i=0;i<sz;i++){
+            int u=q.front(); q.pop(); rem--;
+            for(int v:g[u]){
+                if(--deg[v]==1) q.push(v);
+            }
+        }
+    }
+    int diameter = rem==1 ? 2*rounds : 2*rounds+1;
+    cout<<diameter<<"\n";
+    return 0;
+}

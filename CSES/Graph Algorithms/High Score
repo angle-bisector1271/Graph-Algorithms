@@ -1,0 +1,65 @@
+Use bellman ford algorithm to mark minimum distances and check if there is any positive cycle. The nodes that are a part 
+of any positive cycle will get detected in the n-th iteration. Do a dfs from those nodes to detect if the node n is 
+reachable from them. Also do a dfs from node 1 to check if those nodes are reachable from node 1. If a node reachable form 
+node 1 is part of a positive cycle and node n is reachable from that node then score can increase indefinitely.
+
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll NEG_INF = LLONG_MIN;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n >> m;
+    vector<set<pair<int, ll>>> adj(n);
+    vector<tuple<int, int, ll>> edges;
+    for (int i = 0; i < m; ++i) {
+        int u, v;
+        ll w;
+        cin >> u >> v >> w;
+        --u; --v;
+        adj[u].insert({v, w});
+        edges.emplace_back(u, v, w);
+    }
+
+    vector<ll> dist(n, NEG_INF);
+    dist[0] = 0;
+    vector<bool> inCycle(n, false);
+
+    for (int it = 0; it < n; ++it) {
+        for (auto [u, v, w] : edges) {
+            if (dist[u] == NEG_INF) continue;
+            if (dist[u] + w > dist[v]) {
+                dist[v] = dist[u] + w;
+                if (it == n - 1) inCycle[v] = true;
+            }
+        }
+    }
+
+    queue<int> q;
+    vector<bool> vis(n, false);
+    for (int i = 0; i < n; ++i) {
+        if (inCycle[i]) {
+            q.push(i);
+            vis[i] = true;
+        }
+    }
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (auto [v, _] : adj[u]) {
+            if (!vis[v]) {
+                vis[v] = true;
+                q.push(v);
+            }
+        }
+    }
+
+    if (vis[n - 1]) cout << -1 << '\n';
+    else cout << dist[n - 1] << '\n';
+
+    return 0;
+}

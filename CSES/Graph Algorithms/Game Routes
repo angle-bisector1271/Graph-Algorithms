@@ -1,0 +1,34 @@
+Textbook Kahn's Algorithm with DP where you DP[node]=SUM{ DP[v] ; v has directed edge to node }
+
+#include <bits/stdc++.h>
+using namespace std;
+const int MOD = 1e9+7;
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n,m;
+    cin>>n>>m;
+    vector<vector<int>> g(n+1);
+    vector<int> indeg(n+1), dp(n+1);
+    while(m--){
+        int a,b;
+        cin>>a>>b;
+        g[a].push_back(b);
+        indeg[b]++;
+    }
+    queue<int> q;
+    dp[1]=1;
+    for(int i=1;i<=n;i++)
+        if(indeg[i]==0)
+            q.push(i);
+    while(!q.empty()){
+        int u=q.front();q.pop();
+        for(int v:g[u]){
+            dp[v]=(dp[v]+dp[u])%MOD;
+            if(--indeg[v]==0)
+                q.push(v);
+        }
+    }
+    cout<<dp[n]<<"\n";
+    return 0;
+}

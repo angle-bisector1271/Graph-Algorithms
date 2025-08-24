@@ -1,0 +1,4 @@
+Find number of shortest paths in an undirected weighted graph from node 1 to node i for each i.
+Use a modified version of Djikstra algorithm. Whenever you pop an element from the priority queue, check if
+the node corresponding to that element has its shortest path already assigned and equal to the value in the popped element,
+in which case increase the number of shortest paths to that node by 1.
